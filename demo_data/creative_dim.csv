@@ -2,3 +2,5 @@ creative_key,creative_id,size,duration_seconds
 401,CR-300x250-A,300x250,
 402,CR-VIDEO-15,1920x1080,15
 403,CR-970x250-B,970x250,
+404,CR-VIDEO-30,1920x1080,30
+405,CR-NATIVE-1,responsive,

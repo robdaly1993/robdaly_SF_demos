@@ -2,3 +2,5 @@ segment_key,segment_name,category
 901,Brand Safety: Hate Speech,Brand Safety
 902,Fraud: Sophisticated Invalid Traffic (SIVT),Fraud
 903,Brand Suitability: Violence,Brand Safety
+904,Fraud: General Invalid Traffic (GIVT),Fraud
+905,Brand Safety: Adult Content,Brand Safety

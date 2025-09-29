@@ -2,3 +2,6 @@ publisher_key,publisher_name,domain,app_bundle,inventory_type
 201,NewsNow.com,newsnow.com,,Web
 202,StreamZone App,,com.streamzone.app,App
 203,SportsDaily.com,sportsdaily.com,,Web
+204,EntertainmentHub,entertainmenthub.com,,Web
+205,GameStream App,,com.gamestream,App
+206,CTVNetwork,,ctv.network,CTV

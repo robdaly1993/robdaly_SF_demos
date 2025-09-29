@@ -2,3 +2,6 @@ device_key,device_type,os
 501,Desktop,Windows
 502,Mobile,iOS
 503,CTV,tvOS
+504,Mobile,Android
+505,Desktop,macOS
+506,Tablet,iOS
