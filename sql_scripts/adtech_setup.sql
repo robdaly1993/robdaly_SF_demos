@@ -277,3 +277,75 @@ AS (
 SHOW TABLES;
 SHOW SEMANTIC VIEWS;
 SHOW CORTEX SEARCH SERVICES;
+
+-- =====================
+-- Snowflake Intelligence Agent Setup
+-- =====================
+
+-- Grant necessary permissions for Intelligence Agent
+USE ROLE accountadmin;
+GRANT USAGE ON DATABASE snowflake_intelligence TO ROLE ADTECH_Intelligence_Demo;
+GRANT USAGE ON SCHEMA snowflake_intelligence.agents TO ROLE ADTECH_Intelligence_Demo;
+GRANT CREATE AGENT ON SCHEMA snowflake_intelligence.agents TO ROLE ADTECH_Intelligence_Demo;
+
+USE ROLE ADTECH_Intelligence_Demo;
+
+-- Create Intelligence Agent for AdTech Quality Analysis
+CREATE OR REPLACE AGENT SNOWFLAKE_INTELLIGENCE.AGENTS.AdTech_Quality_Agent
+WITH PROFILE='{ "display_name": "AdTech Quality Agent" }'
+COMMENT=$$ This agent can answer questions about ad quality, viewability, fraud, AVOC, and campaign performance. $$
+FROM SPECIFICATION $$
+{
+  "models": {
+    "orchestration": ""
+  },
+  "instructions": {
+    "response": "You are an ad quality analyst with access to impression-level data, viewability, AVOC, fraud, and brand safety metrics. Answer questions about campaign performance, publisher quality, and optimization opportunities. Provide visualizations when helpful.",
+    "orchestration": "Use the AdTech Quality semantic view for structured data queries and search documents for policies and guidelines. Default to year 2025 if no date range is specified.",
+    "sample_questions": [
+      {
+        "question": "What is the viewability rate by publisher last 30 days?"
+      },
+      {
+        "question": "Which campaigns have the highest fraud rate?"
+      },
+      {
+        "question": "Show me AVOC and viewability trends by device type"
+      },
+      {
+        "question": "What are our brand safety policies?"
+      }
+    ]
+  },
+  "tools": [
+    {
+      "tool_spec": {
+        "type": "cortex_analyst_text_to_sql",
+        "name": "Query AdTech Quality Data",
+        "description": "Allows users to query ad quality metrics including impressions, viewability, AVOC, fraud, blocked impressions, unsafe impressions, CTR, and CPM across advertisers, campaigns, publishers, placements, devices, exchanges, and channels."
+      }
+    },
+    {
+      "tool_spec": {
+        "type": "cortex_search",
+        "name": "Search AdTech Documents",
+        "description": "Search internal documents including brand safety policies, fraud prevention guides, CTV playbooks, and quality reports."
+      }
+    }
+  ],
+  "tool_resources": {
+    "Query AdTech Quality Data": {
+      "semantic_view": "ADTECH_AI_DEMO.DEMO_SCHEMA.ADTECH_QUALITY_SEMANTIC_VIEW"
+    },
+    "Search AdTech Documents": {
+      "id_column": "FILE_URL",
+      "max_results": 5,
+      "name": "ADTECH_AI_DEMO.DEMO_SCHEMA.SEARCH_ADTECH_DOCS",
+      "title_column": "TITLE"
+    }
+  }
+}
+$$;
+
+-- Verification
+SHOW AGENTS IN SCHEMA SNOWFLAKE_INTELLIGENCE.AGENTS;
