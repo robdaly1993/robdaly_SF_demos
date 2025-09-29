@@ -1,5 +1,5 @@
 -- ========================================================================
--- AdTech Snowflake Intelligence Demo - DoubleVerify Focus
+-- AdTech Snowflake Intelligence Demo - Ad Quality Focus
 -- Creates DB, schema, tables, loads data from GitHub-like structure
 -- ========================================================================
 
@@ -112,7 +112,7 @@ CREATE OR REPLACE TABLE channel_dim (
   channel_name VARCHAR(50)
 );
 
-CREATE OR REPLACE TABLE dv_segment_dim (
+CREATE OR REPLACE TABLE quality_segment_dim (
   segment_key INT PRIMARY KEY,
   segment_name VARCHAR(200),
   category VARCHAR(100)
@@ -138,13 +138,13 @@ CREATE OR REPLACE TABLE ad_impressions_fact (
   measured_impressions INT,
   viewable_impressions INT,
   avoc_impressions INT,
-  dv_blocked_impressions INT,
-  dv_fraud_impressions INT,
-  dv_unsafe_impressions INT,
+  blocked_impressions INT,
+  fraud_impressions INT,
+  unsafe_impressions INT,
   media_cost DECIMAL(12,2)
 );
 
-CREATE OR REPLACE TABLE dv_verification_fact (
+CREATE OR REPLACE TABLE verification_fact (
   verification_id INT PRIMARY KEY,
   date DATE,
   campaign_key INT,
@@ -167,9 +167,9 @@ COPY INTO device_dim FROM @INTERNAL_DATA_STAGE/demo_data/device_dim.csv FILE_FOR
 COPY INTO geo_dim FROM @INTERNAL_DATA_STAGE/demo_data/geo_dim.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
 COPY INTO exchange_dim FROM @INTERNAL_DATA_STAGE/demo_data/exchange_dim.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
 COPY INTO channel_dim FROM @INTERNAL_DATA_STAGE/demo_data/channel_dim.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
-COPY INTO dv_segment_dim FROM @INTERNAL_DATA_STAGE/demo_data/dv_segment_dim.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
+COPY INTO quality_segment_dim FROM @INTERNAL_DATA_STAGE/demo_data/quality_segment_dim.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
 COPY INTO ad_impressions_fact FROM @INTERNAL_DATA_STAGE/demo_data/ad_impressions_fact.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
-COPY INTO dv_verification_fact FROM @INTERNAL_DATA_STAGE/demo_data/dv_verification_fact.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
+COPY INTO verification_fact FROM @INTERNAL_DATA_STAGE/demo_data/verification_fact.csv FILE_FORMAT=CSV_FORMAT ON_ERROR='CONTINUE';
 
 -- =====================
 -- Semantic View: ADTECH Verification & Quality
@@ -185,9 +185,9 @@ create or replace semantic view ADTECH_AI_DEMO.DEMO_SCHEMA.ADTECH_QUALITY_SEMANT
     GEO as GEO_DIM primary key (GEO_KEY) with synonyms=('geo','location'),
     EXCHANGES as EXCHANGE_DIM primary key (EXCHANGE_KEY) with synonyms=('exchanges','supply'),
     CHANNELS as CHANNEL_DIM primary key (CHANNEL_KEY) with synonyms=('channels'),
-    DV_SEGMENTS as DV_SEGMENT_DIM primary key (SEGMENT_KEY) with synonyms=('dv segments','safety segments','fraud segments'),
+    DV_SEGMENTS as QUALITY_SEGMENT_DIM primary key (SEGMENT_KEY) with synonyms=('quality segments','safety segments','fraud segments'),
     IMPRESSIONS as AD_IMPRESSIONS_FACT primary key (RECORD_ID) with synonyms=('impressions','delivery'),
-    VERIFICATION as DV_VERIFICATION_FACT primary key (VERIFICATION_ID) with synonyms=('verification','quality')
+    VERIFICATION as VERIFICATION_FACT primary key (VERIFICATION_ID) with synonyms=('verification','quality')
   )
   relationships (
     IMP_TO_ADV as IMPRESSIONS(ADVERTISER_KEY) references ADVERTISERS(ADVERTISER_KEY),
@@ -209,9 +209,9 @@ create or replace semantic view ADTECH_AI_DEMO.DEMO_SCHEMA.ADTECH_QUALITY_SEMANT
     IMPRESSIONS.MEASURED_IMPRESSIONS as measured_impressions,
     IMPRESSIONS.VIEWABLE_IMPRESSIONS as viewable_impressions,
     IMPRESSIONS.AVOC_IMPRESSIONS as avoc_impressions,
-    IMPRESSIONS.DV_BLOCKED_IMPRESSIONS as dv_blocked,
-    IMPRESSIONS.DV_FRAUD_IMPRESSIONS as dv_fraud,
-    IMPRESSIONS.DV_UNSAFE_IMPRESSIONS as dv_unsafe,
+    IMPRESSIONS.BLOCKED_IMPRESSIONS as blocked,
+    IMPRESSIONS.FRAUD_IMPRESSIONS as fraud,
+    IMPRESSIONS.UNSAFE_IMPRESSIONS as unsafe,
     IMPRESSIONS.MEDIA_COST as media_cost,
     VERIFICATION.MEASURED_IMPRESSIONS as ver_measured,
     VERIFICATION.RISKY_IMPRESSIONS as ver_risky,
@@ -244,12 +244,12 @@ create or replace semantic view ADTECH_AI_DEMO.DEMO_SCHEMA.ADTECH_QUALITY_SEMANT
     IMPRESSIONS.CTR as SAFE_DIVIDE(SUM(IMPRESSIONS.clicks), NULLIF(SUM(IMPRESSIONS.impressions),0)),
     IMPRESSIONS.VIEWABILITY_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.viewable_impressions), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
     IMPRESSIONS.AVOC_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.avoc_impressions), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.BLOCK_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.dv_blocked), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.FRAUD_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.dv_fraud), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.UNSAFE_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.dv_unsafe), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.BLOCK_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.blocked), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.FRAUD_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.fraud), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.UNSAFE_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.unsafe), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
     IMPRESSIONS.CPM as 1000 * SAFE_DIVIDE(SUM(IMPRESSIONS.media_cost), NULLIF(SUM(IMPRESSIONS.impressions),0))
   )
-  comment='Semantic view for DoubleVerify quality, viewability, AVOC, and cost KPIs';
+  comment='Semantic view for ad quality, viewability, AVOC, and cost KPIs';
 
 -- =====================
 -- Unstructured docs parse and search services

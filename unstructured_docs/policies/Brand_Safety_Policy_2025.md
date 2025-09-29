@@ -1,4 +1,4 @@
-# DoubleVerify Brand Safety Policy (2025)
+# Brand Safety Policy (2025)
 
 - Coverage: Hate speech, adult content, violence, drugs, terrorism
 - Controls: Avoidance segments, inclusion lists, page-level blocking

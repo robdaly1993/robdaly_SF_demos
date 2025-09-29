@@ -1,4 +1,4 @@
-record_id,date,advertiser_key,campaign_key,placement_key,creative_key,publisher_key,exchange_key,device_key,geo_key,channel_key,impressions,clicks,measured_impressions,viewable_impressions,avoc_impressions,dv_blocked_impressions,dv_fraud_impressions,dv_unsafe_impressions,media_cost
+record_id,date,advertiser_key,campaign_key,placement_key,creative_key,publisher_key,exchange_key,device_key,geo_key,channel_key,impressions,clicks,measured_impressions,viewable_impressions,avoc_impressions,blocked_impressions,fraud_impressions,unsafe_impressions,media_cost
 1001,2025-09-01,1,101,301,401,201,701,501,601,801,50000,250,48000,36000,22000,500,400,300,750.00
 1002,2025-09-01,2,102,302,402,202,702,502,602,802,30000,180,29500,21000,14000,300,350,150,1200.00
 1003,2025-09-01,3,103,303,403,203,703,501,601,801,20000,120,19800,15000,9000,200,120,100,450.00
