@@ -220,8 +220,8 @@ create or replace semantic view ADTECH_AI_DEMO.DEMO_SCHEMA.ADTECH_QUALITY_SEMANT
   dimensions (
     IMPRESSIONS.RECORD_ID as RECORD_ID,
     IMPRESSIONS.DATE as date,
-    IMPRESSIONS.MONTH as MONTH(date),
-    IMPRESSIONS.YEAR as YEAR(date),
+    IMPRESSIONS.RECORD_MONTH as MONTH(date),
+    IMPRESSIONS.RECORD_YEAR as YEAR(date),
     ADVERTISERS.ADVERTISER_NAME as advertiser_name,
     CAMPAIGNS.CAMPAIGN_NAME as campaign_name,
     CAMPAIGNS.OBJECTIVE as objective,
@@ -241,13 +241,13 @@ create or replace semantic view ADTECH_AI_DEMO.DEMO_SCHEMA.ADTECH_QUALITY_SEMANT
     DV_SEGMENTS.CATEGORY as segment_category
   )
   metrics (
-    IMPRESSIONS.CTR as SAFE_DIVIDE(SUM(IMPRESSIONS.clicks), NULLIF(SUM(IMPRESSIONS.impressions),0)),
-    IMPRESSIONS.VIEWABILITY_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.viewable_impressions), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.AVOC_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.avoc_impressions), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.BLOCK_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.blocked), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.FRAUD_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.fraud), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.UNSAFE_RATE as SAFE_DIVIDE(SUM(IMPRESSIONS.unsafe), NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
-    IMPRESSIONS.CPM as 1000 * SAFE_DIVIDE(SUM(IMPRESSIONS.media_cost), NULLIF(SUM(IMPRESSIONS.impressions),0))
+    IMPRESSIONS.CTR as (SUM(IMPRESSIONS.clicks) / NULLIF(SUM(IMPRESSIONS.impressions),0)),
+    IMPRESSIONS.VIEWABILITY_RATE as (SUM(IMPRESSIONS.viewable_impressions) / NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.AVOC_RATE as (SUM(IMPRESSIONS.avoc_impressions) / NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.BLOCK_RATE as (SUM(IMPRESSIONS.blocked) / NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.FRAUD_RATE as (SUM(IMPRESSIONS.fraud) / NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.UNSAFE_RATE as (SUM(IMPRESSIONS.unsafe) / NULLIF(SUM(IMPRESSIONS.measured_impressions),0)),
+    IMPRESSIONS.CPM as 1000 * (SUM(IMPRESSIONS.media_cost) / NULLIF(SUM(IMPRESSIONS.impressions),0))
   )
   comment='Semantic view for ad quality, viewability, AVOC, and cost KPIs';
 
