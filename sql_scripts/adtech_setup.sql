@@ -39,7 +39,7 @@ USE ROLE ADTECH_Intelligence_Demo;
 -- If you mirror this repo to GitLab, update the ORIGIN accordingly
 CREATE OR REPLACE GIT REPOSITORY ADTECH_DEMO_REPO
   API_INTEGRATION = adtech_git_api_integration
-  ORIGIN = 'https://gitlab.com/your-group/adtech_sf_demo.git';
+  ORIGIN = 'https://github.com/robdaly1993/robdaly_SF_demos.git';
 
 CREATE OR REPLACE STAGE INTERNAL_DATA_STAGE FILE_FORMAT=CSV_FORMAT DIRECTORY=(ENABLE=TRUE) ENCRYPTION=(TYPE='SNOWFLAKE_SSE');
 
