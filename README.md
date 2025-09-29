@@ -1,4 +1,4 @@
-# AdTech Snowflake Intelligence Demo (DoubleVerify Focus)
+# AdTech Snowflake Intelligence Demo 
 
 This demo mirrors the structure of the original Snowflake Intelligence Demo but targets AdTech quality and verification analytics using DoubleVerify concepts (brand safety, fraud, viewability, AVOC).
 
